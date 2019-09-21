@@ -13,16 +13,18 @@ $captchaErr = "";
 
 //学生登录管理
 function stu_login($input_name, $input_pwd){
-    $check_query = "select userpwd from stuser where username = '$input_name'";
+    $check_query = "select userpwd,stuID from stuser where username = '$input_name'";
     $conn = mysql_conn();
     $result = mysqli_query($conn, $check_query);
     $row = mysqli_fetch_row($result);
     if($row == 0){
-        echo "用户名错误！";
+        echo "<script>alert('用户名错误！');history.go(-1)</script>";
     }
     if ($row[0] == $input_pwd){
         $conn->close();
-        echo "登录成功！";
+        $_SESSION['stuID'] = $row[1];
+        $message = "登录成功！".$row[1];
+        echo "<script>alert('$message');window.setTimeout(window.location.href='../views/StuView/stuInfo.php',2000)</script>";
     }else{
         echo "密码错误！";
     }
@@ -30,16 +32,17 @@ function stu_login($input_name, $input_pwd){
 
 //企业登录管理
 function enterprise_login($input_name, $input_pwd){
-    $check_query = "select userpwd from enterpuser where username = '$input_name'";
+    $check_query = "select userpwd,enterpID from enterpuser where username = '$input_name'";
     $conn = mysql_conn();
     $result = mysqli_query($conn, $check_query);
 
     $row = mysqli_fetch_row($result);
     if($row == 0){
-        exit("用户名错误！");
+        echo "<script>alert('用户名错误！');history.go(-1)</script>";
     }
     if ($row[0] == $input_pwd){
         $conn->close();
+        $_SESSION['enterpName'] = $row[1];
         echo "登录成功！";
     }else{
         echo "密码错误！";
