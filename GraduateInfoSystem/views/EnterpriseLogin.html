@@ -3,40 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <title>企业登录</title>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <!--device-width自适应移动端宽度，initial-scale=1不进行缩放-->
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
-    <title>Admin</title>
-    <link rel="stylesheet" href="../resource/bootstrap/css/bootstrap.min.css">
 </head>
 <body>
 <form class="navbar-form navbar-right" role="search" action="../Controllers/LogInController.php" method="post">
-    <div class="container ">
-        <nav class="navbar navbar-inverse navbar-fixed-top " role="navigation">
-            <div class="container-fluid">
-                <div class="collapse navbar-collapse">
-                    <form class="navbar-form navbar-right" role="search" action="../Controllers/LogInController.php" method="post">
-                        <div class="form-group">
-                            <label for="AdminName" hidden >enterpID</label>
-                            <input type="text" id="AdminName" placeholder="Enter username" class="form-control" name="AdminName"/>
-                            <label for="password" hidden >password</label>
-                            <input type="password" id="password" placeholder="Enter password" class="form-control" name="AdminPwd" />
-                            <input type="submit" name="go" value="登录" class="form-control" />
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </nav>
+    <div class="form-group">
+        <label for="enterpName" hidden >enterpID</label>
+        <input type="text" id="enterpName" placeholder="Enter username" class="form-control" name="enterpName"/>
+        <label for="password" hidden >password</label>
+        <input type="password" id="password" placeholder="Enter password" class="form-control" name="enterpPwd" />
+        <input type="submit" name="go" value="登录" class="form-control" />
     </div>
 </form>
-<div class="item active">
-    <img src="../img/5.jpg" alt="风景1" width="1920" height="1080">
-    <div class="carousel-caption">
-        <!--h4中的内容显示到图片上面，-->
-        <h4>Real intelligence is determined ambition. —— Napoleon</h4>
-    </div>
-</div>
 </body>
 </html>
-
