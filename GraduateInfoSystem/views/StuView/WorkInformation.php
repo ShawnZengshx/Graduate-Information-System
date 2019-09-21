@@ -1,10 +1,4 @@
 <?php
-session_start();
-if($_SESSION['stuid']==null){
-    echo '<script>alert("请您先登录！");window.location.href="../views/login.php"</script>';
-}
-?>
-<?php
 /**
  * Created by PhpStorm.
  * User: cengshengxing
@@ -13,25 +7,15 @@ if($_SESSION['stuid']==null){
  */
 
 
-include("../Mysql/MysqlConnect.php");
+include("../../MySQL/MySqlConnect.php");
 session_start();
-$stuid = $_SESSION['stuid'];
+$stuid = $_SESSION['stuID'];
 
 ?>
 <?php
 function outJson($stuid){
-    $mysql_conf = array(
-        'host' => '47.100.42.200',
-        'db' => 'sql47_100_42_20',
-        'db_user' => 'sql47_100_42_20',
-        'db_pwd' => 'admin'
-    );
-    @$conn = new mysqli($mysql_conf['host'], $mysql_conf['db_user'], $mysql_conf['db_pwd'], $mysql_conf['db']);
-    if(mysqli_connect_errno()){
-        die("could not connect to mysql: \n". mysqli_connect_error());
-    }   //若发生连接异常
-    $conn->set_charset("utf-8");
-    $full_sql = "select * from registerStatus where stuid = '$stuid'";
+    $conn = mysql_conn();
+    $full_sql = "select * from graduateWork where stuID = '$stuid'";
     $res = mysqli_query($conn,$full_sql);
     if(!$res){
         exit($conn->error);
@@ -45,7 +29,7 @@ function outJson($stuid){
         array_push($jarr,$rows);
     }
     $str = json_encode($jarr);
-    $file = fopen("checkInfo.json","w");
+    $file = fopen("WorkInfo.json","w");
     fwrite($file,$str);
     fclose($file);
     $conn->close();
@@ -66,16 +50,16 @@ outJson($stuid);
 
     <title>Info</title>
 
-    <link href="../resource/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-    <link href="../resource/bootstrap-table/css/bootstrap-table.min.css" rel="stylesheet">
+    <link href="../../resource/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../../resource/bootstrap-table/css/bootstrap-table.min.css" rel="stylesheet">
 
-    <script src="../resource/js/jquery.min.js"></script>
-    <script src="../resource/bootstrap/js/bootstrap.min.js"></script>
-    <script src="../resource/bootstrap-table/js/bootstrap-table.js"></script>
-    <script src="../resource/bootstrap-table/js/bootstrap-table-zh-CN.js"></script>
+    <script src="../../resource/js/jquery.min.js"></script>
+    <script src="../../resource/bootstrap/js/bootstrap.min.js"></script>
+    <script src="../../resource/bootstrap-table/js/bootstrap-table.js"></script>
+    <script src="../../resource/bootstrap-table/js/bootstrap-table-zh-CN.js"></script>
 
     <!-- Custom styles for this template -->
-    <link href="../resource/dashboard.css" rel="stylesheet">
+    <link href="../../resource/dashboard.css" rel="stylesheet">
 
 </head>
 
@@ -90,7 +74,7 @@ outJson($stuid);
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="#">ETS info</a>
+            <a class="navbar-brand" href="#">Graduate info</a>
         </div>
         <div id="navbar" class="navbar-collapse collapse">
             <ul class="nav navbar-nav navbar-right">
@@ -104,12 +88,11 @@ outJson($stuid);
     <div class="row">
         <div class="col-sm-3 col-md-2 sidebar">
             <ul class="nav nav-sidebar">
-                <li><a href="info.php">Overview <span class="sr-only">(current)</span></a></li>
-                <li ><a href="EnrollForExam.php">Register for exam</a></li>
-                <li><a href="../test/PDFtest.php" target=\"_blank\">Confirm Letter</a></li>
-                <li class="active"><a href="EnrollmentStatus.php">Check Enrollment Status</a></li>
-                <li><a href="outPutExcel.php">Export Grade</a></li>
-            </ul>
+                <li><a href="stuInfo.php">Overview <span class="sr-only">(current)</span></a></li>
+                <li class="active"><a href="WorkInformation.php">Work Information</a></li>
+                <li><a href="RecruitmentIno.php">Recruitment Information</a></li>
+                <li><a href="ApplyState.php">Apply State</a></li>
+                <li><a href="../../Tool/PDFtest.php" target=\"_blank\">PDF格式信息</a></li>ul>
         </div>
         <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
             <h2 class="sub-header">报名状态</h2>
@@ -117,7 +100,7 @@ outJson($stuid);
         </div>
         <script>
             $("#table").bootstrapTable({ // 对应table标签的id
-                url: "checkInfo.json",   //AJAX获取表格数据的url
+                url: "WorkInfo.json",   //AJAX获取表格数据的url
                 striped: true,                      //是否显示行间隔色(斑马线)
                 pagination: false,                   //是否显示分页（*）
                 sidePagination: "server",           //分页方式：client客户端分页，server服务端分页（*）
@@ -151,24 +134,37 @@ outJson($stuid);
                 sortable: true,                     //是否启用排序
                 sortOrder: "asc",                   //排序方式
                 sortName: 'sn', // 要排序的字段
-                uniqueId:'roomid',
                 columns: [
                     {
-                        field: 'stuid', // 返回json数据中的name
-                        title: '学生号', // 表格表头显示文字
+                        field: 'stuID', // 返回json数据中的name
+                        title: '学号', // 表格表头显示文字
                         align: 'center', // 左右居中
                         valign: 'middle' // 上下居中
                     }, {
-                        field: 'roomid',
-                        title: '考场号',
+                        field: 'enterpID',
+                        title: '企业号',
                         align: 'center',
                         valign: 'middle'
                     }, {
-                        field: 'status',
-                        title: ' 支付状态',
+                        field: 'employID',
+                        title: '职员编号',
                         align: 'center',
-                        valign: 'middle',
-                        sortable:true
+                        valign: 'middle'
+                    }, {
+                        field: 'workAddr',
+                        title: '工作地点',
+                        align: 'center',
+                        valign: 'middle'
+                    }, {
+                        field: 'employPos',
+                        title: '工作职位',
+                        align: 'center',
+                        valign: 'middle'
+                    }, {
+                        field: 'Salary',
+                        title: '薪资',
+                        align: 'center',
+                        valign: 'middle'
                     }
                 ],
                 onLoadSuccess: function(){  //加载成功时执行
@@ -179,17 +175,6 @@ outJson($stuid);
                 }
 
             });
-        </script>
-        <script>
-            function enroll_exam(){
-                var a =$("#table").bootstrapTable('getSelections');
-                if(a[0].available == "0"){
-                    alert("该考场已满");
-                    return;
-                }
-                var room_id = a[0].roomid;
-                window.location.href="EnrollForExam.php?id="+room_id;
-            }
         </script>
     </div>
 </div>
