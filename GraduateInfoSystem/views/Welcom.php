@@ -45,7 +45,7 @@
             <ul class="nav navbar-nav" id="mytab">
                 <li class="active"><a href="#" >Home</a></li>
                 <li><a href="login.php">Student</a></li>
-                <li><a href="">Enterprise</a></li>
+                <li><a href="EnterpriseLogin.html">Enterprise</a></li>
                 <li ><a href="adminLogin.html">Admin</a></li>
             </ul>
         </div>
