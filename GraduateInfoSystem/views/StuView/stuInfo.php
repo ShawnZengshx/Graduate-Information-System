@@ -50,8 +50,10 @@
         <div class="col-sm-3 col-md-2 sidebar">
             <ul class="nav nav-sidebar">
                 <li class="active"><a href="#">Overview <span class="sr-only">(current)</span></a></li>
-                <li><a href="EnrollForExam.php">Register for exam</a></li>
-                <li><a href="../test/PDFtest.php" target=\"_blank\">Confirm Letter</a></li>
+                <li><a href="WorkInformation.php">Work Information</a></li>
+                <li><a href="RecruitmentIno.php">Recruitment Information</a></li>
+                <li><a href="ApplyState.php">Apply State</a></li>
+                <li><a href="../../Tool/PDFtest.php" target=\"_blank\">PDF格式信息</a></li>
 
             </ul>
         </div>
@@ -192,7 +194,7 @@ outJson();
                 align: 'center',
                 valign: 'middle',
                 sortable:true
-            }{
+            },{
                 field: 'studepartment',
                 title: ' 毕业学院',
                 align: 'center',
