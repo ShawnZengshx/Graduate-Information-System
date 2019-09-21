@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>企业登录</title>
+</head>
+<body>
+<form class="navbar-form navbar-right" role="search" action="../Controllers/LogInController.php" method="post">
+    <div class="form-group">
+        <label for="enterpName" hidden >enterpID</label>
+        <input type="text" id="enterpName" placeholder="Enter username" class="form-control" name="enterpName"/>
+        <label for="password" hidden >password</label>
+        <input type="password" id="password" placeholder="Enter password" class="form-control" name="enterpPwd" />
+        <input type="submit" name="go" value="登录" class="form-control" />
+    </div>
+</form>
+</body>
+</html>
