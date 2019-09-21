@@ -9,8 +9,7 @@
 function mysql_conn(){
     $conn_conf = array(
         'host' => 'localhost:3306',
-        //'db' => 'DataBaseDesign',
-        'db' => 'websql',
+        'db' => 'DataBaseDesign',
         'db_user' => 'root',
         'pwd' => 'Zengshx@9869'
     );
@@ -26,8 +25,4 @@ function mysql_conn(){
 
 ?>
 
-<?php
-function test($input){
-    echo $input;
-}
-?>
+
