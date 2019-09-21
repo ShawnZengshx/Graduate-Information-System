@@ -78,4 +78,3 @@ function verify_stu_user_name($input_name, $conn){
     }
 }
 
-stu_register(20160001, 1234, "lixin");
