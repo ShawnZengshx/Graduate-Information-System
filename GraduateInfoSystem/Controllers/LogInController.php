@@ -43,7 +43,7 @@ function enterprise_login($input_name, $input_pwd){
     if ($row[0] == $input_pwd){
         $conn->close();
         $_SESSION['enterpID'] = $row[1];
-        echo "登录成功！";
+        echo "<script>alert('登录成功！');window.setTimeout(window.location.href='../views/EnterpView/EnterpInfo.php',2000)</script>";
     }else{
         echo "密码错误！";
     }
