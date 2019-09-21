@@ -42,7 +42,7 @@ function enterprise_login($input_name, $input_pwd){
     }
     if ($row[0] == $input_pwd){
         $conn->close();
-        $_SESSION['enterpName'] = $row[1];
+        $_SESSION['enterpID'] = $row[1];
         echo "登录成功！";
     }else{
         echo "密码错误！";

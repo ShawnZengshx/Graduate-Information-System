@@ -14,9 +14,9 @@ $stuid = $_SESSION['stuID'];
 
 ?>
 <?php
-function outJson($stuid){
+function outJson(){
     $conn = mysql_conn();
-    $full_sql = "select * from registerStatus where stuid = '$stuid'";
+    $full_sql = "select * from recruitment left join enterprise on recruitment.enterpID = enterprise.enterpID;";
     $res = mysqli_query($conn,$full_sql);
     if(!$res){
         exit($conn->error);
@@ -30,12 +30,12 @@ function outJson($stuid){
         array_push($jarr,$rows);
     }
     $str = json_encode($jarr);
-    $file = fopen("checkInfo.json","w");
+    $file = fopen("Recruitment.json","w");
     fwrite($file,$str);
     fclose($file);
     $conn->close();
 }
-outJson($stuid);
+outJson();
 ?>
 
 <!DOCTYPE html>
@@ -75,7 +75,7 @@ outJson($stuid);
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="#">ETS info</a>
+            <a class="navbar-brand" href="#">Graduate info</a>
         </div>
         <div id="navbar" class="navbar-collapse collapse">
             <ul class="nav navbar-nav navbar-right">
@@ -97,12 +97,12 @@ outJson($stuid);
             </ul>
         </div>
         <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
-            <h2 class="sub-header">报名状态</h2>
+            <h2 class="sub-header">招募信息表</h2>
             <table id="table"></table>
         </div>
         <script>
             $("#table").bootstrapTable({ // 对应table标签的id
-                url: "checkInfo.json",   //AJAX获取表格数据的url
+                url: "Recruitment.json",   //AJAX获取表格数据的url
                 striped: true,                      //是否显示行间隔色(斑马线)
                 pagination: false,                   //是否显示分页（*）
                 sidePagination: "server",           //分页方式：client客户端分页，server服务端分页（*）
@@ -136,24 +136,44 @@ outJson($stuid);
                 sortable: true,                     //是否启用排序
                 sortOrder: "asc",                   //排序方式
                 sortName: 'sn', // 要排序的字段
-                uniqueId:'roomid',
+                uniqueId:'postNumber',
                 columns: [
                     {
-                        field: 'stuid', // 返回json数据中的name
-                        title: '学生号', // 表格表头显示文字
+                        field: 'postNumber', // 返回json数据中的name
+                        title: '招募编号', // 表格表头显示文字
                         align: 'center', // 左右居中
-                        valign: 'middle' // 上下居中
-                    }, {
-                        field: 'roomid',
-                        title: '考场号',
+                        valign: 'middle', // 上下居中
+                        sortable:true
+                    },{
+                        field: 'enterpID',
+                        title: '企业编号',
                         align: 'center',
                         valign: 'middle'
-                    }, {
-                        field: 'status',
-                        title: ' 支付状态',
+                    },{
+                        field: 'enterpName',
+                        title: '企业名称',
                         align: 'center',
-                        valign: 'middle',
-                        sortable:true
+                        valign: 'middle'
+                    },{
+                        field: 'postName',
+                        title: '职位名称',
+                        align: 'center',
+                        valign: 'middle'
+                    },{
+                        field: 'postSalary',
+                        title: '薪资',
+                        align: 'center',
+                        valign: 'middle'
+                    },{
+                        field: 'postRequirement',
+                        title: '职位要求',
+                        align: 'center',
+                        valign: 'middle'
+                    },{
+                        field: 'workAddr',
+                        title: '工作地点',
+                        align: 'center',
+                        valign: 'middle'
                     }
                 ],
                 onLoadSuccess: function(){  //加载成功时执行
