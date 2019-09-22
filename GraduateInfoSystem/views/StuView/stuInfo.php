@@ -39,7 +39,7 @@
         </div>
         <div id="navbar" class="navbar-collapse collapse">
             <ul class="nav navbar-nav navbar-right">
-                <li><a href="../controllers/stuLogout.php">Logout</a></li>
+                <li><a href="../../Controllers/LogOut.php">Logout</a></li>
             </ul>
         </div>
     </div>
@@ -53,6 +53,7 @@
                 <li><a href="WorkInformation.php">Work Information</a></li>
                 <li><a href="RecruitmentIno.php">Recruitment Information</a></li>
                 <li><a href="ApplyState.php">Apply State</a></li>
+                <li><a href="ShowEvaluation.php">Evaluation</a></li>
                 <li><a href="../../Tool/PDFtest.php" target=\"_blank\">PDF格式信息</a></li>
 
             </ul>

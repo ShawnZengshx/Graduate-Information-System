@@ -30,7 +30,7 @@ function outJson($enterp_id){
         array_push($jarr,$rows);
     }
     $str = json_encode($jarr);
-    $file = fopen("EnterpInfo.json","w");
+    $file = fopen("ApplyInfo.json","w");
     fwrite($file,$str);
     fclose($file);
     $conn->close();
@@ -79,7 +79,7 @@ outJson($enterpID);
         </div>
         <div id="navbar" class="navbar-collapse collapse">
             <ul class="nav navbar-nav navbar-right">
-                <li><a href="../controllers/stuLogout.php">Logout</a></li>
+                <li><a href="../../Controllers/LogOut.php">Logout</a></li>
             </ul>
         </div>
     </div>
@@ -142,7 +142,7 @@ outJson($enterpID);
         </div>
         <script>
             $("#table").bootstrapTable({ // 对应table标签的id
-                url: "EnterpInfo.json",   //AJAX获取表格数据的url
+                url: "ApplyInfo.json",   //AJAX获取表格数据的url
                 striped: true,                      //是否显示行间隔色(斑马线)
                 pagination: false,                   //是否显示分页（*）
                 sidePagination: "server",           //分页方式：client客户端分页，server服务端分页（*）
@@ -196,6 +196,12 @@ outJson($enterpID);
                         title: '职位',
                         align: 'center',
                         valign: 'middle'
+                    },{
+                        field: 'postNumber',
+                        title: '招募编号',
+                        align: 'center',
+                        valign: 'middle',
+                        visible: false
                     }
                 ],
                 onLoadSuccess: function(){  //加载成功时执行
@@ -211,8 +217,11 @@ outJson($enterpID);
             function accept() {
                 var a= $("#table").bootstrapTable('getSelections');
                 var id = a[0].applyNumber;
+                var stu_id = a[0].stuID;
+                var postNumber = a[0].postNumber;
                 $("#table").bootstrapTable('remove',{field:'applyNumber', values:id});
-                window.location.href= "ApplyInfo.php?accApplyNumber=" + id;
+                var acc_info = id + "," + stu_id + "," + postNumber;
+                window.location.href= "ApplyInfo.php?accApply=" + acc_info;
             }
 
             function reject() {
@@ -227,11 +236,68 @@ outJson($enterpID);
 </div>
 
 <?php
-if(isset($_GET['accApplyNumber'])){}
+
+if(isset($_GET['accApply'])){
+    $info = $_GET['accApply'];
+    $slice_info = explode(",", $info);
+    $applyNumber = $slice_info[0];
+    $stuID = $slice_info[1];
+    $postNumber = $slice_info[2];
+    accept_apply($applyNumber, $postNumber, $stuID);
+}
+
 if(isset($_GET['rejApplyNumber'])){
     $target_number = $_GET['rejApplyNumber'];
     reject_apply($target_number);
 }
+
+//接受申请并进行相应的更新
+function accept_apply($apply_number, $post_number, $stu_id){
+    $conn = mysql_conn();
+    $acceptAppQuery = "delete from apply where stuID in (select stuID from (select stuID from apply where applyNumber = '$apply_number') as t ) and applyNumber != '$apply_number' ";
+    $res = mysqli_query($conn, $acceptAppQuery);
+    if($res){
+        $changeState = "update apply set state = 'accept' where applyNumber = '$apply_number'";
+        $result = mysqli_query($conn, $changeState);
+        $getApplyInfo = "select * from recruitment where postNumber = '$post_number'";
+        $recInfo = mysqli_fetch_array(mysqli_query($conn, $getApplyInfo), MYSQLI_ASSOC);
+        $postName = $recInfo['postName']; // 职位名称
+        $postSalary = $recInfo['postSalary'];
+        $workAddr = $recInfo['workAddr'];
+        $enterpID = $_SESSION['enterpID'];
+        $code="1234567890";
+        $length = strlen($code);
+        $employID = "";
+        for($i=0;$i<6;$i++){
+            $cd = mt_rand(0,$length -1);
+            $employID .= $code[$cd];
+        }
+
+        $getWorkNumQuery = "select max(workNumber) from graduateWork";
+        $num = mysqli_fetch_row(mysqli_query($conn, $getWorkNumQuery));
+        if($num[0] == 0){
+            $workNumber = 1;
+        }else{
+            $workNumber = $num[0] + 1;
+        }
+        $updateWorkInfoQuery = "insert into graduateWork(workNumber, stuID, enterpID, employID, workAddr, employPos, salary)".
+                               "values".
+                               "('$workNumber', '$stu_id', '$enterpID','$employID', '$workAddr', '$postName', '$postSalary')";
+        $upRes = mysqli_query($conn, $updateWorkInfoQuery);
+        if($result and $upRes){
+            $conn->close();
+            echo "<script>alert('录用完成！')</script>";
+            outJson($enterpID);
+            echo "<script>window.history.go(-1) </script>";
+            exit;
+        }else{
+            exit($conn->error);
+        }
+    }else{
+        exit($conn->error);
+    }
+}
+
 //拒绝申请并进行相应的更新
 function reject_apply($apply_number){
     $conn = mysql_conn();

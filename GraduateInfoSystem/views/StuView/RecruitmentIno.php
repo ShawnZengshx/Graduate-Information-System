@@ -79,7 +79,7 @@ outJson();
         </div>
         <div id="navbar" class="navbar-collapse collapse">
             <ul class="nav navbar-nav navbar-right">
-                <li><a href="../controllers/stuLogout.php">Logout</a></li>
+                <li><a href="../../Controllers/LogOut.php">Logout</a></li>
             </ul>
         </div>
     </div>
@@ -93,11 +93,34 @@ outJson();
                 <li><a href="WorkInformation.php">Work Information</a></li>
                 <li class="active"><a href="RecruitmentIno.php">Recruitment Information</a></li>
                 <li><a href="ApplyState.php">Apply State</a></li>
+                <li><a href="ShowEvaluation.php">Evaluation</a></li>
                 <li><a href="../../Tool/PDFtest.php" target=\"_blank\">PDF格式信息</a></li>
             </ul>
         </div>
         <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
             <h2 class="sub-header">招募信息表</h2>
+
+            <div class="btn-group operation">
+                <button id="btn_edit" type="button" class="btn bg-primary" data-target="#Apply" data-toggle="modal">
+                    <span class="glyphicon glyphicon-calendar" aria-hidden="true"></span>申请
+                </button>
+            </div>
+
+            <!-- 进行申请的model-->
+            <div class="modal fade" id="Apply" role="dialog">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            <h4 class="modal-title">确认要申请吗？</h4>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                            <button id="delete" type="button" class="btn btn-danger" data-dismiss="modal" onclick="apply()">申请</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <table id="table"></table>
         </div>
         <script>
@@ -139,11 +162,14 @@ outJson();
                 uniqueId:'postNumber',
                 columns: [
                     {
+                        checkbox: true
+                    }, {
                         field: 'postNumber', // 返回json数据中的name
                         title: '招募编号', // 表格表头显示文字
                         align: 'center', // 左右居中
                         valign: 'middle', // 上下居中
-                        sortable:true
+                        sortable:true,
+                        visible:false
                     },{
                         field: 'enterpID',
                         title: '企业编号',
@@ -186,17 +212,68 @@ outJson();
             });
         </script>
         <script>
-            function enroll_exam(){
-                var a =$("#table").bootstrapTable('getSelections');
-                if(a[0].available == "0"){
-                    alert("该考场已满");
-                    return;
-                }
-                var room_id = a[0].roomid;
-                window.location.href="EnrollForExam.php?id="+room_id;
+            function apply(){
+                var a= $("#table").bootstrapTable('getSelections');
+                var pos_number = a[0].postNumber;
+                var enterp_id = a[0].enterpID;
+                var app_info = pos_number + "," + enterp_id;
+                window.location.href= "RecruitmentIno.php?Apply=" + app_info;
             }
         </script>
     </div>
 </div>
+
+<?php
+
+if(isset($_GET['Apply'])){
+    $info = $_GET['Apply'];
+    $slice_info = explode(",", $info);
+    $postNumber = $slice_info[0];
+    $enterpID = $slice_info[1];
+    apply_for_job($_SESSION['stuID'], $postNumber);
+}
+function apply_for_job($stu_id, $post_number){
+    $conn = mysql_conn();
+    if(check_apply_if_duplicated($stu_id, $post_number, $conn)){
+        $conn->close();
+        echo "<script>alert('请不要重复申请！');window.history.go(-1)</script>";
+        exit;
+    }
+    $getAppNumberQuery = "select max(applyNumber) from apply";
+    $res = mysqli_query($conn, $getAppNumberQuery);
+    if($res){
+        $row = mysqli_fetch_row($res);
+        $appNumber = $row[0] + 1;
+    }else{
+        $appNumber = 1;
+    }
+
+    $getEnterpIDQuery = "select enterpID from recruitment where postNumber = '$post_number'";
+    $enterpID = mysqli_fetch_row(mysqli_query($conn, $getEnterpIDQuery));
+
+    $applyForJobQuery = "insert into apply(applyNumber, stuID, enterpID, postNumber, state)".
+        "values".
+        "('$appNumber', '$stu_id', '$enterpID[0]', '$post_number', 'waiting')";
+    $result = mysqli_query($conn, $applyForJobQuery);
+    if($result){
+        $conn->close();
+        echo "<script>alert('申请成功!');window.history.go(-1)</script>";
+        exit;
+    }else{
+        exit($conn->error);
+    }
+}
+
+//检测学生是否重复申请一个职位
+function check_apply_if_duplicated($stu_id, $post_number, $conn){
+    $checkApplyIfDup = "select * from apply where stuId = '$stu_id' and postNumber = '$post_number'";
+    $res = mysqli_fetch_row(mysqli_query($conn, $checkApplyIfDup));
+    if($res == 0){
+        return false;
+    }else{
+        return true;
+    }
+}
+?>
 
 

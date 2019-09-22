@@ -78,7 +78,7 @@ outJson($stuid);
         </div>
         <div id="navbar" class="navbar-collapse collapse">
             <ul class="nav navbar-nav navbar-right">
-                <li><a href="../controllers/stuLogout.php">Logout</a></li>
+                <li><a href="../../Controllers/LogOut.php">Logout</a></li>
             </ul>
         </div>
     </div>
@@ -92,10 +92,11 @@ outJson($stuid);
                 <li class="active"><a href="WorkInformation.php">Work Information</a></li>
                 <li><a href="RecruitmentIno.php">Recruitment Information</a></li>
                 <li><a href="ApplyState.php">Apply State</a></li>
-                <li><a href="../../Tool/PDFtest.php" target=\"_blank\">PDF格式信息</a></li>ul>
+                <li><a href="ShowEvaluation.php">Evaluation</a></li>
+                <li><a href="../../Tool/PDFtest.php" target=\"_blank\">PDF格式信息</a></li>
         </div>
         <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
-            <h2 class="sub-header">报名状态</h2>
+            <h2 class="sub-header">工作信息</h2>
             <table id="table"></table>
         </div>
         <script>
@@ -161,7 +162,7 @@ outJson($stuid);
                         align: 'center',
                         valign: 'middle'
                     }, {
-                        field: 'Salary',
+                        field: 'salary',
                         title: '薪资',
                         align: 'center',
                         valign: 'middle'

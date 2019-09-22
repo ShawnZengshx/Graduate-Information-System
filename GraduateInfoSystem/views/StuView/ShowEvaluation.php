@@ -8,15 +8,16 @@
  */
 
 
-include("../../MySQL/MySqlConnect.php");
+
+include ("../../MySQL/MySqlConnect.php");
 session_start();
-$stuid = $_SESSION['stuID'];
+$stuID = $_SESSION['stuID'];
 
 ?>
 <?php
-function outJson($stuid){
+function outJson($stu_id){
     $conn = mysql_conn();
-    $full_sql = "select * from apply left join recruitment on apply.postNumber = recruitment.postNumber where apply.stuID = '$stuid'";
+    $full_sql = "select * from evaluation where stuID = '$stu_id' ";
     $res = mysqli_query($conn,$full_sql);
     if(!$res){
         exit($conn->error);
@@ -30,12 +31,12 @@ function outJson($stuid){
         array_push($jarr,$rows);
     }
     $str = json_encode($jarr);
-    $file = fopen("ApplyState.json","w");
+    $file = fopen("stuEvaluation.json","w");
     fwrite($file,$str);
     fclose($file);
     $conn->close();
 }
-outJson($stuid);
+outJson($stuID);
 ?>
 
 <!DOCTYPE html>
@@ -89,21 +90,22 @@ outJson($stuid);
     <div class="row">
         <div class="col-sm-3 col-md-2 sidebar">
             <ul class="nav nav-sidebar">
-                <li><a href="stuInfo.php">Overview <span class="sr-only">(current)</span></a></li>
+                <li><a href="#">Overview <span class="sr-only">(current)</span></a></li>
                 <li><a href="WorkInformation.php">Work Information</a></li>
                 <li><a href="RecruitmentIno.php">Recruitment Information</a></li>
-                <li class="active"><a href="ApplyState.php">Apply State</a></li>
-                <li><a href="ShowEvaluation.php">Evaluation</a></li>
+                <li><a href="ApplyState.php">Apply State</a></li>
+                <li class="active"><a href="ShowEvaluation.php">Evaluation</a></li>
                 <li><a href="../../Tool/PDFtest.php" target=\"_blank\">PDF格式信息</a></li>
             </ul>
         </div>
         <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
-            <h2 class="sub-header">申请状态</h2>
+            <h2 class="sub-header">个人评价</h2>
+
             <table id="table"></table>
         </div>
         <script>
             $("#table").bootstrapTable({ // 对应table标签的id
-                url: "ApplyState.json",   //AJAX获取表格数据的url
+                url: "stuEvaluation.json",   //AJAX获取表格数据的url
                 striped: true,                      //是否显示行间隔色(斑马线)
                 pagination: false,                   //是否显示分页（*）
                 sidePagination: "server",           //分页方式：client客户端分页，server服务端分页（*）
@@ -137,48 +139,37 @@ outJson($stuid);
                 sortable: true,                     //是否启用排序
                 sortOrder: "asc",                   //排序方式
                 sortName: 'sn', // 要排序的字段
-                uniqueId:'roomid',
+                checkboxHeader:true,
+                uniqueId:'evalNumber',
                 columns: [
                     {
-                        field: 'stuID', // 返回json数据中的name
-                        title: '学号', // 表格表头显示文字
+                        field: 'evalNumber', // 返回json数据中的name
+                        title: '评价编号', // 表格表头显示文字
                         align: 'center', // 左右居中
-                        valign: 'middle' // 上下居中
-                    }, {
+                        valign: 'middle', // 上下居中
+                        sortable:true,
+                        visible:false
+                    },{
+                        field: 'stuID',
+                        title: '学号',
+                        align: 'center',
+                        valign: 'middle',
+                        visible: false
+                    },{
                         field: 'enterpID',
-                        title: '企业号',
+                        title: '评价企业编号',
                         align: 'center',
                         valign: 'middle'
-                    }, {
-                        field: 'postName',
-                        title: '职位',
+                    },{
+                        field: 'evaluation',
+                        title: '评语',
                         align: 'center',
-                        valign: 'middle',
-                        sortable:true
-                    }, {
-                        field: 'postRequirement',
-                        title: '职位要求',
+                        valign: 'middle'
+                    },{
+                        field: 'evalGrade',
+                        title: '评级',
                         align: 'center',
-                        valign: 'middle',
-                        sortable:true
-                    }, {
-                        field: 'postSalary',
-                        title: '薪资',
-                        align: 'center',
-                        valign: 'middle',
-                        sortable:true
-                    }, {
-                        field: 'workAddr',
-                        title: '工作地点',
-                        align: 'center',
-                        valign: 'middle',
-                        sortable:true
-                    }, {
-                        field: 'state',
-                        title: '申请状态',
-                        align: 'center',
-                        valign: 'middle',
-                        sortable:true
+                        valign: 'middle'
                     }
                 ],
                 onLoadSuccess: function(){  //加载成功时执行
@@ -190,8 +181,9 @@ outJson($stuid);
 
             });
         </script>
+        <script>
 
+        </script>
     </div>
 </div>
-
 

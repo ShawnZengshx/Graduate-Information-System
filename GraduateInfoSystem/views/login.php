@@ -17,7 +17,8 @@
     <link href="../resource/signin.css" rel="stylesheet">
 
 </head>
-<?php require '../Controllers/LogInController.php' ?>
+<?php require '../Controllers/LogInController.php';
+?>
 <body>
 
 <div class="item active">
@@ -44,7 +45,6 @@
                     <li ><a href="Welcom.php">Home</a></li>
                     <li class="active"><a href="#">Student</a></li>
                     <li><a href="EnterpriseLogin.html">Enterprise</a></li>
-                    <li><a href="adminLogin.html">Admin</a></li>
                 </ul>
             </div>
         </div>
