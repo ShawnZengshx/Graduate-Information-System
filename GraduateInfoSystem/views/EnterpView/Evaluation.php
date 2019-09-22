@@ -8,7 +8,8 @@
  */
 
 
-include("../../MySQL/MySqlConnect.php");
+
+include ("../../MySQL/MySqlConnect.php");
 session_start();
 $enterpID = $_SESSION['enterpID'];
 
@@ -16,7 +17,7 @@ $enterpID = $_SESSION['enterpID'];
 <?php
 function outJson($enterp_id){
     $conn = mysql_conn();
-    $full_sql = "select * from evaluation left join graduateWork on evaluation.enterpID = graduateWork.enterpID where evaluation.enterpID = '$enterp_id' ";
+    $full_sql = "select * from evaluation left join graduateWork on evaluation.enterpID = graduateWork.enterpID and evaluation.stuID = graduateWork.stuID where evaluation.enterpID = '$enterp_id' ";
     $res = mysqli_query($conn,$full_sql);
     if(!$res){
         exit($conn->error);
@@ -98,6 +99,71 @@ outJson($enterpID);
         </div>
         <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
             <h2 class="sub-header">评价信息表</h2>
+            <div class="btn-group operation">
+                <button id="btn_edit" type="button" class="btn bg-info update" data-target="#updateStuInfo" data-toggle="modal">
+                    <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>修改评语
+                </button>
+                <button id="btn_delete" type="button" class="btn btn-success del" data-toggle="modal" data-target="#deleteStu">
+                    <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>修改评级
+                </button>
+            </div>
+
+            <!-- 进行评语修改的model-->
+            <div class="modal fade" id="updateStuInfo" role="dialog">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            <h4 class="modal-title">修改评价</h4>
+                        </div>
+                        <div id="editBookModal" class="modal-body">
+                            <div class="form-horizontal">
+                                <div class="form-group">
+                                    <label for="updateEvaluation" class="col-sm-2 control-label">评语:*</label>
+                                    <div class="col-sm-10">
+                                        <input class="form-control" id="updateEvaluation" type="text">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <div class="center-block">
+                                <button id="cancelEdit" type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                                <button id="saveEdit" type="button" class="btn btn-success update_ok" data-dismiss="modal" onclick="update_evaluation()">保存</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--修改评级的modal-->
+
+            <div class="modal fade" id="deleteStu" role="dialog">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            <h4 class="modal-title">修改评级</h4>
+                        </div>
+                        <div id="editEvalGradeModal" class="modal-body">
+                            <div class="form-horizontal">
+                                <div class="form-group">
+                                    <label for="updateEvaluation" class="col-sm-2 control-label">评级:*</label>
+                                    <div class="col-sm-10">
+                                        <label><input name="EvalGrade" type="radio" value="A">   A    </label>
+                                        <label><input name="EvalGrade" type="radio" value="B">   B    </label>
+                                        <label><input name="EvalGrade" type="radio" value="C">   C    </label>
+                                        <label><input name="EvalGrade" type="radio" value="D">   D    </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                            <button id="delete" type="button" class="btn btn-success update_ok" data-dismiss="modal" onclick="update_eval_grade()">确认</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <table id="table"></table>
         </div>
         <script>
@@ -136,9 +202,12 @@ outJson($enterpID);
                 sortable: true,                     //是否启用排序
                 sortOrder: "asc",                   //排序方式
                 sortName: 'sn', // 要排序的字段
+                checkboxHeader:true,
                 uniqueId:'evalNumber',
                 columns: [
                     {
+                        checkbox:true
+                    },{
                         field: 'evalNumber', // 返回json数据中的name
                         title: '评价编号', // 表格表头显示文字
                         align: 'center', // 左右居中
@@ -177,17 +246,89 @@ outJson($enterpID);
             });
         </script>
         <script>
-            function enroll_exam(){
-                var a =$("#table").bootstrapTable('getSelections');
-                if(a[0].available == "0"){
-                    alert("该考场已满");
-                    return;
+            function update_evaluation () {
+                var a= $("#table").bootstrapTable('getSelections');
+                var ids = a[0].stuID;
+                var target = a[0].evalNumber;
+                var evaluation = $("#updateEvaluation").val();
+                var _data={
+                    "evaluation":evaluation
+                };
+                var up = ids+","+evaluation;
+                $("#table").bootstrapTable('updateByUniqueId',{id:target, row:_data});
+                window.location.href="Evaluation.php?Eval=" + up;
+            }
+
+            function update_eval_grade () {
+                var a= $("#table").bootstrapTable('getSelections');
+                var ids = a[0].stuID;
+                var target = a[0].evalNumber;
+                var selected = document.getElementsByName("EvalGrade");
+                var evalGrade = "";
+                for(var i = 0; i<selected.length; i++){
+                    if(selected[i].checked){
+                        evalGrade = selected[i].value;
+                    }
                 }
-                var room_id = a[0].roomid;
-                window.location.href="EnrollForExam.php?id="+room_id;
+                var _data={
+                    "evalGrade":evalGrade
+                };
+                var up = ids+","+evalGrade;
+                $("#table").bootstrapTable('updateByUniqueId',{id:target, row:_data});
+                window.location.href="Evaluation.php?EvalGrade=" + up;
             }
         </script>
     </div>
 </div>
 
+<?php
+    if(isset($_GET['Eval'])){
+        $info = $_GET['Eval'];
+        $slice_info = explode(",", $info);
+        $stu_id = $slice_info[0];
+        $evaluation = $slice_info[1];
+        update_evaluation($stu_id, $evaluation, $enterpID);
+    }
 
+    if(isset($_GET['EvalGrade'])){
+        $info = $_GET['EvalGrade'];
+        $slice_info = explode(",", $info);
+        $stu_id = $slice_info[0];
+        $evalGrade = $slice_info[1];
+        update_eval_with_grade($stu_id, $evalGrade, $enterpID);
+    }
+?>
+
+<?php
+//进行评价内容的修改
+function update_evaluation($stu_id, $evaluation, $enterp_id){
+    $conn = mysql_conn();
+    $updateEvaluationQuery = "update evaluation set evaluation = '$evaluation'".
+        "where stuID = '$stu_id' and enterpID = '$enterp_id'";
+    $res = mysqli_query($conn, $updateEvaluationQuery);
+    if($res){
+        $conn->close();
+        echo "<script>alert('更新成功！')</script>";
+        outJson($enterp_id);
+        exit;
+    }else{
+        exit($conn->error);
+    }
+}
+
+//进行评价等级的修改
+function update_eval_with_grade($stu_id, $eval_grade, $enterp_id){
+    $conn = mysql_conn();
+    $updateEvalGradeQuery = "update evaluation set evalGrade = '$eval_grade'".
+        "where stuID = '$stu_id' and enterpID = '$enterp_id'";
+    $res = mysqli_query($conn, $updateEvalGradeQuery);
+    if($res){
+        $conn->close();
+        echo "<script>alert('更新成功！')</script>";
+        outJson($enterp_id);
+        exit;
+    }else{
+        exit($conn->error);
+    }
+}
+?>

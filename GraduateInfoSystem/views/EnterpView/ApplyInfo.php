@@ -98,6 +98,46 @@ outJson($enterpID);
         </div>
         <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
             <h2 class="sub-header">申请信息</h2>
+            <div class="btn-group operation">
+                <button id="btn_edit" type="button" class="btn bg-primary" data-target="#acceptApply" data-toggle="modal">
+                    <span class="glyphicon glyphicon-calendar" aria-hidden="true"></span>接受
+                </button>
+                <button id="btn_delete" type="button" class="btn btn-success del" data-toggle="modal" data-target="#rejectApply">
+                    <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>拒绝
+                </button>
+            </div>
+
+            <!-- 进行接受申请的model-->
+            <div class="modal fade" id="acceptApply" role="dialog">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            <h4 class="modal-title">确认要接受吗？</h4>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                            <button id="delete" type="button" class="btn btn-danger" data-dismiss="modal" onclick="accept()">接受</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 进行拒绝申请的model-->
+            <div class="modal fade" id="rejectApply" role="dialog">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            <h4 class="modal-title">确认要拒绝吗？</h4>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                            <button id="delete" type="button" class="btn btn-danger" data-dismiss="modal" onclick="reject()">拒绝</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <table id="table"></table>
         </div>
         <script>
@@ -139,8 +179,10 @@ outJson($enterpID);
                 uniqueId:'applyNumber',
                 columns: [
                     {
+                        checkbox:true
+                    },{
                         field: 'applyNumber',
-                        title: '申请滨蒿',
+                        title: '申请编号',
                         align: 'center',
                         valign: 'middle',
                         visible:false
@@ -166,17 +208,43 @@ outJson($enterpID);
             });
         </script>
         <script>
-            function enroll_exam(){
-                var a =$("#table").bootstrapTable('getSelections');
-                if(a[0].available == "0"){
-                    alert("该考场已满");
-                    return;
-                }
-                var room_id = a[0].roomid;
-                window.location.href="EnrollForExam.php?id="+room_id;
+            function accept() {
+                var a= $("#table").bootstrapTable('getSelections');
+                var id = a[0].applyNumber;
+                $("#table").bootstrapTable('remove',{field:'applyNumber', values:id});
+                window.location.href= "ApplyInfo.php?accApplyNumber=" + id;
             }
+
+            function reject() {
+                var a= $("#table").bootstrapTable('getSelections');
+                var id = a[0].applyNumber;
+                $("#table").bootstrapTable('remove',{field:'applyNumber', values:id});
+                window.location.href= "ApplyInfo.php?rejApplyNumber=" + id;
+            }
+
         </script>
     </div>
 </div>
 
-
+<?php
+if(isset($_GET['accApplyNumber'])){}
+if(isset($_GET['rejApplyNumber'])){
+    $target_number = $_GET['rejApplyNumber'];
+    reject_apply($target_number);
+}
+//拒绝申请并进行相应的更新
+function reject_apply($apply_number){
+    $conn = mysql_conn();
+    $rejectAppQuery = "update apply set state = 'reject' where applyNumber = '$apply_number'";
+    $res = mysqli_query($conn, $rejectAppQuery);
+    if($res){
+        $conn->close();
+        echo "<script>alert('拒绝成功！')</script>";
+        outJson($_SESSION['enterpID']);
+        echo "<script>window.history.go(-1)</script>";
+        exit;
+    }else{
+        exit($conn->error);
+    }
+}
+?>

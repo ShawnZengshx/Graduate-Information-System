@@ -51,6 +51,4 @@ function delete_recruitment($post_number){
 
 
 
-$requirement = "是一个人";
-put_up_recruitment("0001", "programmer", $requirement, "$19111", "SF");
 

@@ -98,6 +98,66 @@ outJson($enterpID);
         </div>
         <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
             <h2 class="sub-header">毕业生职员信息表</h2>
+            <div class="btn-group operation">
+                <button id="btn_edit" type="button" class="btn bg-info update" data-target="#fireStu" data-toggle="modal">
+                    <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>解雇
+                </button>
+                <button id="btn_delete" type="button" class="btn btn-success del" data-toggle="modal" data-target="#deleteStu">
+                    <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>评价
+                </button>
+            </div>
+
+            <!-- 进行解雇的model-->
+            <div class="modal fade" id="fireStu" role="dialog">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            <h4 class="modal-title">确认要解雇吗？</h4>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                            <button id="delete" type="button" class="btn btn-danger" data-dismiss="modal" onclick="fire_stu()">解雇</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!--修改评级的modal-->
+
+            <div class="modal fade" id="deleteStu" role="dialog">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            <h4 class="modal-title">进行评价</h4>
+                        </div>
+                        <div id="editEvalModal" class="modal-body">
+                            <div class="form-horizontal">
+                                <div class="form-group">
+                                    <div class="form-group">
+                                        <label for="updateEvaluation" class="col-sm-2 control-label">评语:*</label>
+                                        <div class="col-sm-8">
+                                            <input class="form-control" id="updateEvaluation" type="text">
+                                        </div>
+                                    </div>
+                                    <label for="updateEvalGrade" class="col-sm-2 control-label">评级:*</label>
+                                    <div class="col-sm-10">
+                                        <label><input id="updateEvalGrade" name="EvalGrade" type="radio" value="A">   A    </label>
+                                        <label><input id="updateEvalGrade" name="EvalGrade" type="radio" value="B">   B    </label>
+                                        <label><input id="updateEvalGrade" name="EvalGrade" type="radio" value="C">   C    </label>
+                                        <label><input id="updateEvalGrade" name="EvalGrade" type="radio" value="D">   D    </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                            <button id="delete" type="button" class="btn btn-success update_ok" data-dismiss="modal" onclick="put_up_eval()">确认</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <table id="table"></table>
         </div>
         <script>
@@ -139,6 +199,8 @@ outJson($enterpID);
                 uniqueId:'stuID',
                 columns: [
                     {
+                        checkbox:true
+                    },{
                         field: 'employID', // 返回json数据中的name
                         title: '职员编号', // 表格表头显示文字
                         align: 'center', // 左右居中
@@ -177,17 +239,86 @@ outJson($enterpID);
             });
         </script>
         <script>
-            function enroll_exam(){
-                var a =$("#table").bootstrapTable('getSelections');
-                if(a[0].available == "0"){
-                    alert("该考场已满");
-                    return;
+            function fire_stu(){
+                var a= $("#table").bootstrapTable('getSelections');
+                var id = a[0].stuID;
+                $("#table").bootstrapTable('remove',{field:'stuID', values:id});
+                window.location.href="AllEmployment.php?firedID=" + id;
+            }
+
+            function put_up_eval(){
+                var a= $("#table").bootstrapTable('getSelections');
+                var id = a[0].stuID;
+                var evaluation = $("#updateEvaluation").val();
+                var selected = document.getElementsByName("EvalGrade");
+                var evalGrade = "";
+                for(var i =0; i<selected.length; i++){
+                    if(selected[i].checked){
+                        evalGrade = selected[i].value;
+                    }
                 }
-                var room_id = a[0].roomid;
-                window.location.href="EnrollForExam.php?id="+room_id;
+                var php_info = id + "," + evaluation + "," + evalGrade;
+                window.location.href="AllEmployment.php?newEval=" + php_info;
             }
         </script>
     </div>
 </div>
 
+<?php
+if(isset($_GET['firedID'])){
+    $target_id = $_GET['firedID'];
+    fire_employee($target_id);
+}
 
+if(isset($_GET['newEval'])){
+    $info = $_GET['newEval'];
+    $slice = explode(",", $info);
+    $stuID = $slice[0];
+    $evaluation = $slice[1];
+    $evalGrade = $slice[2];
+
+    give_evaluation($stuID, $evalGrade, $evaluation, $_SESSION['enterpID']);
+}
+function fire_employee($fired_id){
+    $conn = mysql_conn();
+
+    $firingEmployeeQuery = "delete from graduatework where stuID = '$fired_id'";
+    $result = mysqli_query($conn, $firingEmployeeQuery);
+    if(mysqli_affected_rows($conn) == 0){
+        exit("不能重复解雇同一个人！");
+    }elseif($result){
+        $conn->close();
+        echo "<script>alert('解雇成功！')</script>";
+        outJson($_SESSION['enterpID']);
+        echo "<script>window.history.go(-1)</script>";
+        exit;
+    }else{
+        exit($conn->error);
+    }
+} // 解雇雇员
+
+//对学生进行评价操作，分为评级以及评语
+function give_evaluation($stu_id, $eval_grade, $evaluation, $enterp_id){
+    $conn = mysql_conn();
+    $getEvalNumberQuery = "select max(evalNumber) from evaluation";
+    $numRes = mysqli_query($conn, $getEvalNumberQuery);
+
+    if($numRes){
+        $row = mysqli_fetch_row($numRes);
+        $evalNumber = $row[0] + 1;
+    }else{
+        $evalNumber = 1;
+    }
+
+    $giveEvaluationQuery = "insert into evaluation(evalNumber, stuID, evaluation, evalGrade, enterpID)" .
+        "values" .
+        "('$evalNumber', '$stu_id', '$evaluation', '$eval_grade', '$enterp_id')";
+    $res = mysqli_query($conn, $giveEvaluationQuery);
+    if ($res) {
+        $conn->close();
+        echo "<script>alert('评价成功！');window.setTimeout(window.location.href='Evaluation.php',500)</script>";
+    } else {
+        exit($conn->error);
+    }
+}
+?>

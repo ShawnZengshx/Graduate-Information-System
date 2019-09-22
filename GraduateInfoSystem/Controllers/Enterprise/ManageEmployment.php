@@ -35,6 +35,3 @@ function fire_employee($fired_id){
     }
 } // 解雇雇员
 
-
-
-fire_employee("20160001");

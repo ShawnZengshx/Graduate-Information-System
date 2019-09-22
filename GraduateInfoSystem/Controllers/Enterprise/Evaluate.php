@@ -36,19 +36,7 @@ function give_evaluation($stu_id, $eval_grade, $evaluation, $enterp_id){
     }
 }
 
-//进行评价内容的修改
-function update_evaluation($stu_id, $evaluation, $enterp_id){
-    $conn = mysql_conn();
-    $updateEvaluationQuery = "update evaluation set evaluation = '$evaluation'".
-                             "where stuID = '$stu_id' and enterpID = '$enterp_id'";
-    $res = mysqli_query($conn, $updateEvaluationQuery);
-    if($res){
-        $conn->close();
-        exit("更新成功！");
-    }else{
-        exit($conn->error);
-    }
-}
+
 
 //进行评价等级的修改
 function update_eval_with_grade($stu_id, $eval_grade, $enterp_id){
@@ -63,10 +51,3 @@ function update_eval_with_grade($stu_id, $eval_grade, $enterp_id){
         exit($conn->error);
     }
 }
-
-$evaluation = "这个人不错的";
-//give_evaluation(20160001, "A", $evaluation, "0001");
-$newEvaluation = "这个人不行的";
-//update_evaluation(20160001, $newEvaluation, "0001");
-$newEvalGrade = "B";
-update_eval_with_grade(20160001, $newEvalGrade, "0001");

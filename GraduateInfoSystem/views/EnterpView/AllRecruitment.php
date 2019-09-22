@@ -98,6 +98,69 @@ outJson($enterpID);
         </div>
         <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
             <h2 class="sub-header">招募信息表</h2>
+            <div class="btn-group operation">
+                <button id="btn_add" type="button" class="btn bg-info update" data-target="#putUpRecruit" data-toggle="modal">
+                    <span class="glyphicon glyphicon-bitcoin" aria-hidden="true"></span>发布招募信息
+                </button>
+                <button id="btn_delete" type="button" class="btn bg-danger" data-toggle="modal" data-target="#deleteRecruit">
+                    <span class="glyphicon glyphicon-alert" aria-hidden="true"></span>下架招募信息
+                </button>
+            </div>
+
+            <!-- 进行发布新招募信息的model-->
+            <div class="modal fade" id="putUpRecruit" role="dialog">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            <h4 class="modal-title">发布新的招募信息</h4>
+                        </div>
+
+                        <div id="editBookModal" class="modal-body">
+                            <div class="form-horizontal">
+                                <div class="form-group">
+                                    <label for="postName" class="col-sm-2 control-label">职位:*</label>
+                                    <div class="col-sm-10">
+                                        <input class="form-control" id="postName" type="text">
+                                    </div>
+                                    <label for="requirement" class="col-sm-2 control-label">要求:*</label>
+                                    <div class="col-sm-10">
+                                        <input class="form-control" id="requirement" type="text">
+                                    </div>
+                                    <label for="salary" class="col-sm-2 control-label">薪资:*</label>
+                                    <div class="col-sm-10">
+                                        <input class="form-control" id="salary" type="text">
+                                    </div>
+                                    <label for="workAddr" class="col-sm-2 control-label">工作地点:*</label>
+                                    <div class="col-sm-10">
+                                        <input class="form-control" id="workAddr" type="text">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                            <button id="delete" type="button" class="btn btn-danger" data-dismiss="modal" onclick="put_up_recruitment()">发布</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 进行下架招募信息的model-->
+            <div class="modal fade" id="deleteRecruit" role="dialog">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            <h4 class="modal-title">确认要下架吗？</h4>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                            <button id="delete" type="button" class="btn btn-danger" data-dismiss="modal" onclick="delete_recruitment()">下架</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <table id="table"></table>
         </div>
         <script>
@@ -139,6 +202,8 @@ outJson($enterpID);
                 uniqueId:'postNumber',
                 columns: [
                     {
+                        checkbox:true
+                    },{
                         field: 'postNumber', // 返回json数据中的name
                         title: '招募编号', // 表格表头显示文字
                         align: 'center', // 左右居中
@@ -177,17 +242,88 @@ outJson($enterpID);
             });
         </script>
         <script>
-            function enroll_exam(){
-                var a =$("#table").bootstrapTable('getSelections');
-                if(a[0].available == "0"){
-                    alert("该考场已满");
-                    return;
-                }
-                var room_id = a[0].roomid;
-                window.location.href="EnrollForExam.php?id="+room_id;
+            function put_up_recruitment(){
+                var postName = $("#postName").val();
+                var requirement = $("#requirement").val();
+                var salary = $("#salary").val();
+                var workAddr = $("#workAddr").val();
+                var php_info = postName + "," + requirement + "," + salary + "," + workAddr;
+                window.location.href = "AllRecruitment.php?recInfo=" + php_info;
+            }
+
+            function delete_recruitment () {
+                var a= $("#table").bootstrapTable('getSelections');
+                var id = a[0].postNumber;
+                $("#table").bootstrapTable('remove',{field:'postNumber', values:id});
+                window.location.href= "AllRecruitment.php?delPostNumber=" + id;
             }
         </script>
     </div>
 </div>
 
+<?php
+
+if(isset($_GET['recInfo'])){
+    $info = $_GET['recInfo'];
+    $slice_info = explode(",", $info);
+    $postName = $slice_info[0];
+    $requirement = $slice_info[1];
+    $salary = $slice_info[2];
+    $workAddr = $slice_info[3];
+    put_up_recruitment($_SESSION['enterpID'], $postName, $requirement, $salary, $workAddr);
+}
+
+if(isset($_GET['delPostNumber'])){
+    $target_number = $_GET['delPostNumber'];
+    delete_recruitment($target_number);
+}
+
+function put_up_recruitment($enterp_id, $post_name, $post_requirement, $post_salary, $work_addr){
+    $conn = mysql_conn();
+    $getNumberQuery = "select max(postNumber) from recruitment";
+    $numberREsult = mysqli_query($conn, $getNumberQuery);
+    if($numberREsult){
+        $row = mysqli_fetch_row($numberREsult);
+        $posNumber = $row[0] + 1;
+    }else{
+        $posNumber = 1;
+    }
+
+    $putUpRecruitmentQuery = "insert into recruitment(postNumber, enterpID, postName, postRequirement".
+        ",postSalary, workAddr)"."values".
+        "('$posNumber', '$enterp_id', '$post_name', '$post_requirement','$post_salary','$work_addr')";
+    $res = mysqli_query($conn, $putUpRecruitmentQuery);
+    if($res){
+        $conn->close();
+        echo "<script>alert('发布成功！')</script>";
+        outJson($_SESSION['enterpID']);
+        echo "<script>window.history.go(-1)</script>";
+    }else{
+        exit($conn -> error);
+    }
+
+} // 发布招募信息
+
+
+//下架招聘信息
+function delete_recruitment($post_number){
+    $conn = mysql_conn();
+    $turnOffForeignKeyCheck = "set foreign_key_checks = 0"; // 关闭数据库的外键检测
+    mysqli_query($conn, $turnOffForeignKeyCheck);
+    $deleteQuery = "delete from recruitment where postNumber = '$post_number'";
+    mysqli_query($conn, $deleteQuery);
+    $res = mysqli_affected_rows($conn);
+    if($res == 0){
+        exit($conn->error);
+    }else{
+        $turnOnForeignKeyCheck = "set foreign_key_checks = 1"; // 重新开启外键检测
+        mysqli_query($conn, $turnOnForeignKeyCheck);
+        $conn->close();
+        echo "<script>alert('$post_number')</script>";
+        outJson($_SESSION['enterpID']);
+        echo "<script>window.history.go(-1)</script>";
+        exit;
+    }
+}
+?>
 
