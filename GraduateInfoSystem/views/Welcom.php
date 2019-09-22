@@ -66,9 +66,20 @@
         <p>When people can demonstrate their potential, the possibilities are endless.
             <br>Meaningful measurement today can help you set your best path forward tomorrow. Our assessments and research tools are designed to help you make decisions with confidence.</p>
         <!--<p><a class="btn btn-primary btn-lg" href="#" role="button">Register now &raquo;</a></p>-->
-        <p><button type="button" class="btn btn-default btn-lg" data-toggle="modal" data-target="#myModal" style="background:#9acfea ">
-            Register now&raquo;
-        </button></p>
+
+
+
+        <form class="form-horizontal" role="form">
+            <div class="form-group">
+                <button type="button" class="btn btn-default btn-lg" data-toggle="modal" data-target="#myModal" style="background:#9acfea ">
+                        Graduate Register&raquo;
+                    </button>
+                <button type="button" class="btn btn-default btn-lg" data-toggle="modal" data-target="#myModal" style="background:#9acfea ">
+                        Enterprise Register&raquo;
+                    </button>
+            </div>
+        </form>
+
 
         <div class="modal" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
             <div class="modal-dialog">
@@ -115,17 +126,17 @@
         <div class="col-md-4">
             <h2 style="color: #1b6d85">Employment Informations</h2>
             <p>The school will further expand the employment channels for graduates and improve the employment quality of graduates in accordance with the principles of local conditions, classified guidance and precise docking.</p>
-            <p><a class="btn btn-default" href="#" role="button">View details &raquo;</a></p>
+            <p><a class="btn btn-default" href="http://gdjy.hfut.edu.cn/" role="button">View details &raquo;</a></p>
         </div>
         <div class="col-md-4">
             <h2 style="color: #d58512">Innovation and Entrepreneurship</h2>
             <p>In order to run the "open classroom", the Student Employment Guidance Center actively researched, seriously judged and invited the relevant responsible persons of high-quality employers to come to the school to carry out special lectures, and spare no effort to do the employment guidance services for the 2020 graduates.</p>
-            <p><a class="btn btn-default" href="#" role="button">View details &raquo;</a></p>
+            <p><a class="btn btn-default" href="http://gdjy.hfut.edu.cn/" role="button">View details &raquo;</a></p>
         </div>
         <div class="col-md-4">
             <h2 style="color: #761c19">Career Development</h2>
             <p>The University Student Employment Guidance Center runs a career planning and career development open classroom for college students, aiming at achieving a seamless connection between colleges and employers, allowing students who are about to enter the graduating class to understand the needs of quality enterprises in advance and lay the foundation for their job hunting.</p>
-            <p><a class="btn btn-default" href="#" role="button">View details &raquo;</a></p>
+            <p><a class="btn btn-default" href="http://gdjy.hfut.edu.cn/" role="button">View details &raquo;</a></p>
         </div>
     </div>
 
