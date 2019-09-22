@@ -19,7 +19,19 @@
 </head>
 <?php require '../Controllers/LogInController.php' ?>
 <body>
-<div class="container ">
+<div class="item active">
+    <img src="../img/11.jpg" alt="风景1" width="1920" height="1080">
+</div> <!-- /container -->
+<script src="../resource/js/jquery.min.js"></script>
+<script src="../resource/bootstrap/js/bootstrap.min.js"></script>
+<style>
+    .scale img{
+        background-size:cover;
+        width:100%;
+        height: auto;
+    }
+</style>
+<div class="carousel-caption">
     <nav class="navbar navbar-inverse navbar-fixed-top " role="navigation">
         <div class="container-fluid">
             <div class="navbar-header ">
@@ -50,8 +62,6 @@
             </label>
         </div>
         <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
-
-
     </form>
 </div>
 
@@ -61,12 +71,6 @@
     })
 
 </script>
-
-
-<div class="container">
-
-
-</div> <!-- /container -->
 
 </body>
 </html>
