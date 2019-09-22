@@ -16,7 +16,7 @@ $enterpID = $_SESSION['enterpID'];
 <?php
 function outJson($enterp_id){
     $conn = mysql_conn();
-    $full_sql = "select * from recruitment where enterpID = '$enterp_id' ";
+    $full_sql = "select * from evaluation left join graduateWork on evaluation.enterpID = graduateWork.enterpID where evaluation.enterpID = '$enterp_id' ";
     $res = mysqli_query($conn,$full_sql);
     if(!$res){
         exit($conn->error);
@@ -30,7 +30,7 @@ function outJson($enterp_id){
         array_push($jarr,$rows);
     }
     $str = json_encode($jarr);
-    $file = fopen("Recruitment.json","w");
+    $file = fopen("Evaluation.json","w");
     fwrite($file,$str);
     fclose($file);
     $conn->close();
@@ -91,17 +91,18 @@ outJson($enterpID);
             <ul class="nav nav-sidebar">
                 <li><a href="EnterpInfo.php">Overview <span class="sr-only">(current)</span></a></li>
                 <li><a href="AllEmployment.php">Employment Information</a></li>
-                <li class="active"><a href="AllRecruitment.php">Recruitment Information</a></li>
+                <li><a href="AllRecruitment.php">Recruitment Information</a></li>
                 <li><a href="ApplyInfo.php">Apply Information</a></li>
+                <li class="active"><a href="Evaluation.php">Evaluation</a></li>
             </ul>
         </div>
         <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
-            <h2 class="sub-header">招募信息表</h2>
+            <h2 class="sub-header">评价信息表</h2>
             <table id="table"></table>
         </div>
         <script>
             $("#table").bootstrapTable({ // 对应table标签的id
-                url: "Recruitment.json",   //AJAX获取表格数据的url
+                url: "Evaluation.json",   //AJAX获取表格数据的url
                 striped: true,                      //是否显示行间隔色(斑马线)
                 pagination: false,                   //是否显示分页（*）
                 sidePagination: "server",           //分页方式：client客户端分页，server服务端分页（*）
@@ -135,33 +136,33 @@ outJson($enterpID);
                 sortable: true,                     //是否启用排序
                 sortOrder: "asc",                   //排序方式
                 sortName: 'sn', // 要排序的字段
-                uniqueId:'postNumber',
+                uniqueId:'evalNumber',
                 columns: [
                     {
-                        field: 'postNumber', // 返回json数据中的name
-                        title: '招募编号', // 表格表头显示文字
+                        field: 'evalNumber', // 返回json数据中的name
+                        title: '评价编号', // 表格表头显示文字
                         align: 'center', // 左右居中
                         valign: 'middle', // 上下居中
                         sortable:true,
                         visible:false
                     },{
-                        field: 'postName',
-                        title: '职位名称',
+                        field: 'stuID',
+                        title: '学号',
                         align: 'center',
                         valign: 'middle'
                     },{
-                        field: 'postRequirement',
-                        title: '招募要求',
+                        field: 'employID',
+                        title: '职员编号',
                         align: 'center',
                         valign: 'middle'
                     },{
-                        field: 'postSalary',
-                        title: '薪资',
+                        field: 'evaluation',
+                        title: '评语',
                         align: 'center',
                         valign: 'middle'
                     },{
-                        field: 'workAddr',
-                        title: '工作地点',
+                        field: 'evalGrade',
+                        title: '评级',
                         align: 'center',
                         valign: 'middle'
                     }
