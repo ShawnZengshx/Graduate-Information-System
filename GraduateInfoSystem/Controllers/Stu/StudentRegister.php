@@ -18,7 +18,9 @@ function stu_register($input_id, $input_pwd, $input_name){
     if(verify_stu_id($input_id, $conn)){
         //需要加入验证该学号是否已经注册过
         if (verify_stu_id_if_duplicated($input_id, $conn)){
-            exit("该学号已经被注册！");
+            $conn->close();
+            echo "<script>alert('该学号已被注册！');window.history.go(-1)</script>";
+            exit;
         }
         //验证用户名
         if(verify_stu_user_name($input_name, $conn)){
@@ -34,15 +36,20 @@ function stu_register($input_id, $input_pwd, $input_name){
             $res = mysqli_query($conn, $updateUser);
             if($res){
                 $conn -> close();
-                echo "更新成功！";
+                echo "<script>alert('注册成功！即将跳转到登录界面');window.setTimeout(window.location.href='../../views/login.php',400)</script>";
+                exit;
             }else{
                 $conn ->error;
             }
         }else{
-            exit("用户名已被注册");
+            $conn->close();
+            echo "<script>alert('用户名已被注册！');window.history.go(-1) </script>";
+            exit;
         }
     }else{
-        exit("学号错误！") ;
+        $conn->close();
+        echo "<script>alert('学号错误！');window.history.go(-1)</script>";
+        exit;
     }
 }
 
@@ -78,3 +85,11 @@ function verify_stu_user_name($input_name, $conn){
     }
 }
 
+if(isset($_GET['stuRegInfo'])){
+    $info = $_GET['stuRegInfo'];
+    $slice_info = explode(",", $info);
+    $stuID = $slice_info[2];
+    $userName = $slice_info[0];
+    $userPwd = $slice_info[1];
+    stu_register($stuID, $userPwd, $userName);
+}

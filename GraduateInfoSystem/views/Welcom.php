@@ -61,8 +61,8 @@
 <div class="jumbotron">
     <div class="container">
         <h1 style="font-family: Arial;color: #204d74"><span style="font-style: italic">Graduate</span> Information System <sup>&reg;</sup></h1>
-
-        <p>When people can demonstrate their potential, the possibilities are endless.
+        <h2 style="font-family: 'American Typewriter'">Welcome to GIS!</h2>
+        <p style="font-family: 'American Typewriter'">When people can demonstrate their potential, the possibilities are endless.
             <br>Meaningful measurement today can help you set your best path forward tomorrow. Our assessments and research tools are designed to help you make decisions with confidence.</p>
         <!--<p><a class="btn btn-primary btn-lg" href="#" role="button">Register now &raquo;</a></p>-->
 
@@ -70,26 +70,25 @@
 
         <form class="form-horizontal" role="form">
             <div class="form-group">
-                <button type="button" class="btn btn-default btn-lg" data-toggle="modal" data-target="#myModal" style="background:#9acfea ">
+                <button type="button" class="btn btn-default btn-lg" data-toggle="modal" data-target="#stuModal" style="background:#9acfea " name="stuReg">
                         Graduate Register&raquo;
                     </button>
-                <button type="button" class="btn btn-default btn-lg" data-toggle="modal" data-target="#myModal" style="background:#9acfea ">
+                <button type="button" class="btn btn-default btn-lg" data-toggle="modal" data-target="#enterpModal" style="background:#9acfea " name="enterpReg">
                         Enterprise Register&raquo;
                     </button>
             </div>
         </form>
 
-
-        <div class="modal" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <!-- 学生注册用的modal -->
+        <div class="modal" id="stuModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
-                        <h4 class="modal-title" id="myModalLabel">Register for Graduate Info System</h4>
+                        <h4 class="modal-title" id="stuModalLabel">Register for Graduate Info System</h4>
                     </div>
-                    <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
                         <div class="modal-body">
                             <div class="form-group">
                                 <span class="error">* 必填字段</span><br/>
@@ -97,27 +96,83 @@
                                 <input class="form-control" type="text" id="stuname" name="stuname"/><span class="error">*</span>
                                 <label for="password" class="control-label">Password</label>
                                 <input class="form-control" type="password" id="password" name="password" />
-                                <label for="confirmpwd" class="control-label">Confirm password</label>
-                                <input class="form-control" type="password" id="confirmpwd" name="confirmpwd" /><span class="error">*</span>
-                                <label for="stuemail" class="control-label">Email</label>
-                                <input class="form-control" type="text" id="stuemail" name="email"/><span class="error">*</span>
-                                <label for="stuidenid" class="control-label">Identical ID</label>
-                                <input class="form-control" type="text" id="stuidenid" name="stuidenid" />
-                                <label for="stuface" class="control-label">Real Name</label>
-                                <input class="form-control" type="text" id="stuface" name="stuface"/>
+                                <label for="stuConfirmPwd" class="control-label">Confirm password</label>
+                                <input class="form-control" type="password" id="stuConfirmPwd" name="stuConfirmPwd" /><span class="error">*</span>
+                                <label for="stuID" class="control-label">StuID</label>
+                                <input class="form-control" type="text" id="stuID" name="stuID"/><span class="error"></span>
+
                             </div>
                         </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                        <input type="submit" class="btn btn-primary" value="OK">
+                        <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="stuRegister()">Register</button>
                     </div>
-                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- 企业注册用的modal -->
+
+        <div class="modal" id="enterpModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                        <h4 class="modal-title" id="enterpModalLabel">Register for Graduate Info System</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <span class="error">* 必填字段</span><br/>
+                            <label for="enterpname" class="control-label">User name</label>
+                            <input class="form-control" type="text" id="enterpname" name="enterpname"/><span class="error">*</span>
+                            <label for="enterpPwd" class="control-label">Password</label>
+                            <input class="form-control" type="password" id="enterpPwd" name="password" />
+                            <label for="enterpConfirmPwd" class="control-label">Confirm password</label>
+                            <input class="form-control" type="password" id="enterpConfirmPwd" name="enterpConfirmPwd" /><span class="error">*</span>
+                            <label for="enterpID" class="control-label">EnterpID</label>
+                            <input class="form-control" type="text" id="enterpID" name="enterpID"/><span class="error"></span>
+
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="enterpRegister()">Register</button>
+                    </div>
                 </div>
             </div>
         </div>
 
     </div>
 </div>
+<script>
+    function stuRegister(){
+        var userName = $("#stuname").val();
+        var userPwd = $("#password").val();
+        var stuID = $("#stuID").val();
+        var stuConfirmPwd = $("#stuConfirmPwd").val();
+        if(userPwd !== stuConfirmPwd){
+            alert("两次密码不一致！");
+        }else{
+            var regInfo = userName + "," + userPwd + "," + stuID;
+            window.location.href = "../Controllers/Stu/StudentRegister.php?stuRegInfo=" + regInfo;
+        }
+    }
+
+    function enterpRegister () {
+        var userName = $("#enterpname").val();
+        var userPwd = $("#enterpPwd").val();
+        var enterpID = $("#enterpID").val();
+        var enterpConfirmPwd = $("#enterpConfirmPwd").val();
+        if(enterpConfirmPwd !== userPwd){
+            alert("两次密码不一致！");
+        }else{
+            var regInfo = userName + "," + userPwd + "," + enterpID;
+            window.location.href = "../Controllers/Enterprise/EnterpriseRegister.php?enterpRegInfo=" + regInfo;
+        }
+    }
+</script>
 
 <div class="container">
     <!-- Example row of columns -->
@@ -142,7 +197,7 @@
     <hr>
 
     <footer>
-        <p>&copy; 2019 Company, Inc.</p>
+        <p>&copy; 2019 ShawnZ & GMY Company, Inc.</p>
     </footer>
 </div> <!-- /container -->
 

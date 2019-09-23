@@ -17,7 +17,9 @@ function check_enterp_register($input_id, $input_pwd, $input_name){
     if(verify_enterp_id($input_id, $conn)){
         //需要加入验证该学号是否已经注册过
         if (verify_enterp_id_if_duplicated($input_id, $conn)){
-            exit("该企业号已经被注册！");
+            $conn->close();
+            echo "<script>alert('该企业号已被注册！');window.history.go(-1) </script>";
+            exit;
         }
         //验证用户名
         if(verify_enterp_user_name($input_name, $conn)){
@@ -33,15 +35,20 @@ function check_enterp_register($input_id, $input_pwd, $input_name){
             $res = mysqli_query($conn, $updateUser);
             if($res){
                 $conn -> close();
-                echo "更新成功！";
+                echo "<script>alert('注册成功！ 即将跳转到登录界面');window.setTimeout(window.location.href='../../views/EnterpriseLogin.html',400)</script>";
+                exit;
             }else{
                 $conn ->error;
             }
         }else{
-            exit("用户名已被注册");
+            $conn->close();
+            echo "<script>alert('该用户名已被注册！');window.history.go(-1)</script>";
+            exit;
         }
     }else{
-        exit("企业号错误！") ;
+        $conn->close();
+        echo "<script>alert('企业号错误！');window.history.go(-1)</script>";
+        exit;
     }
 }
 
@@ -77,4 +84,11 @@ function verify_enterp_user_name($input_name, $conn){
     }
 }
 
-check_enterp_register(010,01231, "asdhia");
+if(isset($_GET['enterpRegInfo'])){
+    $info = $_GET['enterpRegInfo'];
+    $sliceInfo = explode(",", $info);
+    $enterpName = $sliceInfo[0];
+    $enterpPwd = $sliceInfo[1];
+    $enterpID = $sliceInfo[2];
+    check_enterp_register($enterpID, $enterpPwd, $enterpName);
+}

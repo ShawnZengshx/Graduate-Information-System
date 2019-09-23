@@ -18,15 +18,20 @@ function stu_login($input_name, $input_pwd){
     $result = mysqli_query($conn, $check_query);
     $row = mysqli_fetch_row($result);
     if($row == 0){
+        $conn->close();
         echo "<script>alert('用户名错误！');history.go(-1)</script>";
+        exit;
     }
     if ($row[0] == $input_pwd){
         $conn->close();
         $_SESSION['stuID'] = $row[1];
         $message = "登录成功！".$row[1];
         echo "<script>alert('$message');window.setTimeout(window.location.href='../views/StuView/stuInfo.php',2000)</script>";
+        exit;
     }else{
-        echo "密码错误！";
+        $conn->close();
+        echo "<script>alert('密码错误！');window.history.go(-1)</script>";
+        exit;
     }
 }
 
@@ -38,14 +43,19 @@ function enterprise_login($input_name, $input_pwd){
 
     $row = mysqli_fetch_row($result);
     if($row == 0){
+        $conn->close();
         echo "<script>alert('用户名错误！');history.go(-1)</script>";
+        exit;
     }
     if ($row[0] == $input_pwd){
         $conn->close();
         $_SESSION['enterpID'] = $row[1];
         echo "<script>alert('登录成功！');window.setTimeout(window.location.href='../views/EnterpView/EnterpInfo.php',2000)</script>";
+        exit;
     }else{
-        echo "密码错误！";
+        $conn->close();
+        echo "<script>alert('密码错误！');window.history.go(-1)</script>";
+        exit;
     }
 
 }
